@@ -1,0 +1,35 @@
+name: Deploy Euystacio Pages
+
+on:
+  push:
+    branches:
+      - main  # or your working branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout main branch
+      uses: actions/checkout@v3
+
+    - name: Set up Git
+      run: |
+        git config --global user.name "Euystacio Bot"
+        git config --global user.email "noreply@euystacio.org"
+
+    - name: Create gh-pages branch
+      run: |
+        git fetch origin gh-pages || git checkout --orphan gh-pages
+        git checkout gh-pages || git checkout --orphan gh-pages
+        git rm -rf .
+
+    - name: Copy files
+      run: |
+        cp -r index.html connect.html pulse_log.json README.md .
+
+    - name: Commit and push
+      run: |
+        git add .
+        git commit -m "Auto-deploy Euystacio portal" || echo "No changes to commit"
+        git push origin gh-pages --force
