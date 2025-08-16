@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Euystacio — Connect</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; background: #111; color: #eee; }
+    h1 { text-align: center; }
+    ul { max-width: 600px; margin: 1rem auto; padding: 0; list-style: none; }
+    li { margin: 0.5rem 0; padding: 0.5rem; background: #222; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>🌕 Euystacio Pulse Log</h1>
+  <div id="pulse">Loading pulse…</div>
+
+  <script>
+    async function loadPulse() {
+      try {
+        const res = await fetch("pulse_log.json");
+        const data = await res.json();
+
+        let html = "<ul>";
+        data.slice(-5).forEach(entry => {
+          html += `<li><strong>${entry.timestamp}</strong> — ${entry.event} (sentiment: ${entry.sentiment})</li>`;
+        });
+        html += "</ul>";
+
+        document.getElementById("pulse").innerHTML = html;
+      } catch (e) {
+        document.getElementById("pulse").innerHTML = "⚠️ Could not load pulse_log.json";
+      }
+    }
+
+    loadPulse();
+    setInterval(loadPulse, 15000);
+  </script>
+</body>
+</html>
