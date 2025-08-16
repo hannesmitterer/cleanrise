@@ -1,7 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+fetch("/pulse", {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify(newEntry)
+}).then(res => res.json())
+  .then(data => console.log("Kernel updated, balance:", data.balance_metric));
+<meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Euystacio — Connect</title>
   <style>
