@@ -54,7 +54,7 @@
         const data = await res.json();
         let html = "";
         data.slice(-5).reverse().forEach(entry => {
-          html += `<li><strong>${entry.timestamp}</strong> — ${entry.event} (sentiment: ${entry.sentiment}, role: ${entry.role})</li>`;
+          html += `<li><strong>${entry.timestamp}</strong> — ${entry.event} (sentiment: ${entry.sentiment}, role: ${entry.role}, user: ${entry.user})</li>`;
         });
         document.getElementById("pulse-log").innerHTML = html;
       } catch(e) {
@@ -93,29 +93,32 @@
     });
 
     // Pulse submission
-    document.getElementById("pulse-form").addEventListener("submit", (e) => {
+    document.getElementById("pulse-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const event = document.getElementById("event").value;
       const sentiment = parseFloat(document.getElementById("sentiment").value);
       const timestamp = new Date().toISOString();
       const newEntry = { timestamp, event, sentiment, role: currentRole, user: currentUser || "anonymous" };
 
-      // Display immediately (backend append needed for persistence)
+      // Display immediately
       const list = document.getElementById("pulse-log");
       const li = document.createElement("li");
-      li.innerHTML = `<strong>${timestamp}</strong> — ${event} (sentiment: ${sentiment}, role: ${currentRole})`;
+      li.innerHTML = `<strong>${timestamp}</strong> — ${event} (sentiment: ${sentiment}, role: ${currentRole}, user: ${currentUser || "anonymous"})`;
       list.prepend(li);
-
       document.getElementById("pulse-form").reset();
 
-      // Optional: send to backend when implemented
-      /*
-      fetch("pulse_log.json", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(newEntry)
-      });
-      */
+      // Send to kernel/backend
+      try {
+        const res = await fetch("/pulse", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(newEntry)
+        });
+        const data = await res.json();
+        console.log("Kernel updated, balance:", data.balance_metric);
+      } catch (err) {
+        console.warn("Backend not connected. Pulse displayed locally only.");
+      }
     });
   </script>
 </body>
