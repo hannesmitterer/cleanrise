@@ -1,0 +1,1 @@
+This folder is for Red Code Kernel logs and future interfaces.
